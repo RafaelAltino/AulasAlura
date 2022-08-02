@@ -1,5 +1,7 @@
 public class Banheiro{
 
+    private boolean ehSujo = true;
+
 
 
     public void mijar(){
@@ -10,15 +12,15 @@ public class Banheiro{
 
         synchronized(this){
             System.out.println(nome + " está entrando no banheiro");
-            System.out.println(nome + " está mijando");
-            try{
-                Thread.sleep(5000);
-            } catch(InterruptedException ex){
-                System.out.println("Sei lá: " + ex);
+
+            while(ehSujo){
+                esperaLaFora(nome);
             }
-            System.out.println(nome + " está balançando");
-            System.out.println(nome + " está dando descarga");
-            System.out.println(nome + " está lavando as mãos");
+
+            System.out.println(nome + " está fazendo xixi");
+            dormir(8000);
+            this.ehSujo = true;
+            System.out.println(nome + ": Estou saindo do banheiro");
         }
 
         
@@ -28,21 +30,58 @@ public class Banheiro{
 
         String nome = Thread.currentThread().getName();
 
-                System.out.println(nome + " batendo na porta");
+        System.out.println(nome + " batendo na porta");
 
         synchronized(this){
 
             System.out.println(nome + " está entrando no banheiro");
-            System.out.println(nome + " está cagando");
-            try{
-                Thread.sleep(10000);
-            } catch(InterruptedException ex){
-                System.out.println("Sei lá: " + ex);
+
+            while(ehSujo){
+                esperaLaFora(nome);
+            }
+
+            System.out.println(nome + " está fazendo cocô");
+            dormir(10000);
+            this.ehSujo = true;
+            System.out.println(nome + ": Estou saindo do banheiro");
+        }
+    }
+
+    public void esperaLaFora(String nome){
+        System.out.printf("%s: Eca, banheiro sujo!\n", nome);
+        dormir(1500);
+        try{
+            this.wait();
+        } catch(InterruptedException ex){
+            ex.printStackTrace();
+        }
+    }
+
+    public void limpa(){
+        String nome = Thread.currentThread().getName();
+        System.out.println(nome + " batendo na porta");
+        synchronized(this){
+            System.out.println(nome + " está entrando no banheiro");
+
+            if(!ehSujo){
+                System.out.println(nome + ": Entrei atoa. Já tá limpo!");
+            } else{
+                System.out.println("Limpando...");
+                dormir(8000);
+                this.ehSujo = false;
+                this.notifyAll();
+                System.out.println("Limpei o banheiro :)");
+                System.out.println(nome + ": Estou saindo do banheiro");
             }
             
-            System.out.println(nome + " está limpando a bunda");
-            System.out.println(nome + " está dando descarga");
-            System.out.println(nome + " está lavando as mãos");
         }
+    }
+
+    public void dormir(long tempo){
+        try{
+            Thread.sleep(tempo);
+        } catch(InterruptedException ex){
+            ex.printStackTrace();
+        }       
     }
 }
